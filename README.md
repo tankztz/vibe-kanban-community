@@ -48,7 +48,16 @@ Documentation is evolving with the community fork. For now, please use this repo
 
 ## Self-Hosting
 
-This project is intended to be local-first. More self-hosting and deployment notes will be added as the community version stabilizes.
+This project is intended to be local-first.
+
+For the fastest local setup, see [docs/self-host-local.md](docs/self-host-local.md).
+
+Short version:
+
+1. Run a local PostgreSQL database
+2. Copy `crates/remote/.env.remote.example` to `crates/remote/.env.remote`
+3. Start the remote API with `cargo run --bin remote`
+4. Start the frontend with `VK_SHARED_API_BASE=http://localhost:4000 bun run dev`
 
 ## Support
 

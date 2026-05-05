@@ -50,7 +50,13 @@ pub(crate) async fn proxy_table(
     session_id: Uuid,
 ) -> Result<Response, ProxyError> {
     // Build the Electric URL
-    let mut origin_url = url::Url::parse(&state.config.electric_url)
+    let electric_url = state
+        .config
+        .electric_url
+        .as_deref()
+        .ok_or_else(|| ProxyError::InvalidConfig("ELECTRIC_URL is not configured".to_string()))?;
+
+    let mut origin_url = url::Url::parse(electric_url)
         .map_err(|e| ProxyError::InvalidConfig(format!("invalid electric_url: {e}")))?;
 
     origin_url.set_path("/v1/shape");

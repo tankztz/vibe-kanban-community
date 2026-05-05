@@ -109,6 +109,12 @@ pub fn router(state: AppState) -> Router {
         .merge(github_app::public_router())
         .merge(billing::public_router());
 
+    let electric_router = if state.config.electric_url.is_some() {
+        electric_proxy::router()
+    } else {
+        Router::<AppState>::new()
+    };
+
     let v1_protected = Router::<AppState>::new()
         .merge(identity::router())
         .merge(hosts::router())
@@ -116,7 +122,7 @@ pub fn router(state: AppState) -> Router {
         .merge(organizations::router())
         .merge(organization_members::protected_router())
         .merge(oauth::protected_router())
-        .merge(electric_proxy::router())
+        .merge(electric_router)
         .merge(github_app::protected_router())
         .merge(project_statuses::router())
         .merge(tags::router())

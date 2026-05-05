@@ -635,6 +635,9 @@ impl ClaudeCode {
             .with_profile(&self.cmd)
             .apply_to_command(&mut command);
 
+        // Prevent nested Claude Code sessions from inheriting the parent marker.
+        command.env_remove("CLAUDECODE");
+
         // Remove ANTHROPIC_API_KEY if disable_api_key is enabled
         if self.disable_api_key.unwrap_or(false) {
             command.env_remove("ANTHROPIC_API_KEY");

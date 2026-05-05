@@ -11,7 +11,6 @@ import { useWorkspaceShortcuts } from '@/shared/keyboard/useWorkspaceShortcuts';
 import { useIssueShortcuts } from '@/shared/keyboard/useIssueShortcuts';
 import { useKeyShowHelp, Scope } from '@/shared/keyboard';
 import { KeyboardShortcutsDialog } from '@/shared/dialogs/shared/KeyboardShortcutsDialog';
-import { ReleaseNotesDialog } from '@/shared/dialogs/global/ReleaseNotesDialog';
 import { TerminalProvider } from '@/shared/providers/TerminalProvider';
 import { HostIdProvider } from '@/shared/providers/HostIdProvider';
 import { WorkspaceProvider } from '@/shared/providers/WorkspaceProvider';
@@ -46,23 +45,9 @@ function ReleaseNotesHandler() {
       return;
     }
 
-    let cancelled = false;
-
-    const showReleaseNotes = async () => {
-      if (config.show_release_notes) {
-        await ReleaseNotesDialog.show();
-        if (!cancelled) {
-          await updateAndSaveConfig({ show_release_notes: false });
-        }
-        ReleaseNotesDialog.hide();
-      }
-    };
-
-    void showReleaseNotes();
-
-    return () => {
-      cancelled = true;
-    };
+    if (config.show_release_notes) {
+      void updateAndSaveConfig({ show_release_notes: false });
+    }
   }, [config, updateAndSaveConfig, location.pathname]);
 
   return null;

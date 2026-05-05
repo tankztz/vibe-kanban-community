@@ -11,7 +11,7 @@ pub struct RemoteServerConfig {
     pub server_public_base_url: Option<String>,
     pub auth: AuthConfig,
     pub refresh_token_overlap_secs: i64,
-    pub electric_url: String,
+    pub electric_url: Option<String>,
     pub electric_secret: Option<SecretString>,
     pub electric_role_password: Option<SecretString>,
     pub electric_publication_names: Vec<String>,
@@ -231,8 +231,9 @@ impl RemoteServerConfig {
             .filter(|value| *value >= 0 && *value <= 300)
             .unwrap_or(60);
 
-        let electric_url =
-            env::var("ELECTRIC_URL").map_err(|_| ConfigError::MissingVar("ELECTRIC_URL"))?;
+        let electric_url = env::var("ELECTRIC_URL")
+            .ok()
+            .filter(|value| !value.trim().is_empty());
 
         let electric_secret = env::var("ELECTRIC_SECRET")
             .map(|s| SecretString::new(s.into()))
