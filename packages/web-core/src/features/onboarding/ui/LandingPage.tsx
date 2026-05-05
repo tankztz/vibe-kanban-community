@@ -115,7 +115,7 @@ const SOCIAL_LINKS = [
   },
   {
     label: 'GitHub',
-    href: 'https://github.com/BloopAI/vibe-kanban',
+    href: 'https://github.com/tankztz/vibe-kanban-community',
     icon: GithubLogoIcon,
   },
   {
