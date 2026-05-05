@@ -64,7 +64,8 @@ Contributions are welcome. If you're planning a larger change, please open an is
 
 - [Rust](https://rustup.rs/) (latest stable)
 - [Node.js](https://nodejs.org/) (>=20)
-- [pnpm](https://pnpm.io/) (>=8)
+- [PostgreSQL](https://www.postgresql.org/) running locally for development
+- Package manager: [pnpm](https://pnpm.io/) (>=8) or [bun](https://bun.sh/)
 
 Additional development tools:
 ```bash
@@ -75,12 +76,16 @@ cargo install sqlx-cli
 Install dependencies:
 ```bash
 pnpm i
+# or
+bun install
 ```
 
 ### Running the dev server
 
 ```bash
 pnpm run dev
+# or
+bun run dev
 ```
 
 This will start the backend and web app. A blank DB will be copied from the `dev_assets_seed` folder.
@@ -92,6 +97,8 @@ To build just the web app:
 ```bash
 cd packages/local-web
 pnpm run build
+# or
+bun run build
 ```
 
 ### Build from source (macOS)
@@ -119,7 +126,7 @@ The following environment variables can be configured at build time or runtime:
 | `VK_SHARED_RELAY_API_BASE` | Runtime | Not set | Base URL for the relay API used by tunnel-mode connections |
 | `VK_TUNNEL` | Runtime | Not set | Enable relay tunnel mode when set (requires relay API base URL) |
 
-**Build-time variables** must be set when running `pnpm run build`. **Runtime variables** are read when the application starts.
+**Build-time variables** must be set when running `pnpm run build` or `bun run build`. **Runtime variables** are read when the application starts.
 
 #### Self-Hosting with a Reverse Proxy or Custom Domain
 
@@ -134,6 +141,18 @@ VK_ALLOWED_ORIGINS=https://vk.example.com
 # Multiple origins (comma-separated)
 VK_ALLOWED_ORIGINS=https://vk.example.com,https://vk-staging.example.com
 ```
+
+### Local PostgreSQL
+
+This fork is being shaped around a local-first workflow. For local development, point the app at a PostgreSQL instance running on your machine or LAN.
+
+A typical local connection string looks like:
+
+```bash
+DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/vibe_kanban
+```
+
+You can place this in your local environment file before running the app.
 
 ### Remote Deployment
 
