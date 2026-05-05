@@ -1,31 +1,22 @@
 <p align="center">
-  <a href="https://vibekanban.com">
-    <picture>
-      <source srcset="packages/public/vibe-kanban-logo-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/public/vibe-kanban-logo.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/public/vibe-kanban-logo.svg" alt="Vibe Kanban Logo">
-    </picture>
-  </a>
+  <picture>
+    <source srcset="packages/public/vibe-kanban-logo-dark.svg" media="(prefers-color-scheme: dark)">
+    <source srcset="packages/public/vibe-kanban-logo.svg" media="(prefers-color-scheme: light)">
+    <img src="packages/public/vibe-kanban-logo.svg" alt="Vibe Kanban Logo">
+  </picture>
 </p>
 
-<p align="center">Get 10X more out of Claude Code, Gemini CLI, Codex, Amp and other coding agents...</p>
-<p align="center">
-  <a href="https://www.npmjs.com/package/vibe-kanban"><img alt="npm" src="https://img.shields.io/npm/v/vibe-kanban?style=flat-square" /></a>
-  <a href="https://github.com/BloopAI/vibe-kanban/blob/main/.github/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/BloopAI/vibe-kanban/.github%2Fworkflows%2Fpublish.yml" /></a>
-  <a href="https://deepwiki.com/BloopAI/vibe-kanban"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
-</p>
-
-<h1 align="center">
-  <a href="https://jobs.polymer.co/vibe-kanban?source=github"><strong>We're hiring!</strong></a>
-</h1>
+<p align="center">A community-maintained, local-first kanban for managing coding agents.</p>
 
 ![](packages/public/vibe-kanban-screenshot-overview.png)
 
 ## Overview
 
-In a world where software engineers spend most of their time planning and reviewing coding agents, the most impactful way to ship more is to get faster at planning and review.
+This repository is forked from [`bloopai/vibe-kanban`](https://github.com/BloopAI/vibe-kanban) and is being developed as **Vibe Kanban Community**: a **local-first agent manager kanban**.
 
-Vibe Kanban is built for this. Use kanban issues to plan work, either privately or with your team. When you're ready to begin, create workspaces where coding agents can execute.
+The goal of this repo is to keep the strong planning and review workflow from the original project while pushing it toward a community-driven, local-first experience for running and managing coding agents.
+
+Use kanban issues to plan work, either privately or with your team. When you're ready to begin, create workspaces where coding agents can execute.
 
 - **Plan with kanban issues** — create, prioritise, and assign issues on a kanban board
 - **Run coding agents in workspaces** — each workspace gives an agent a branch, a terminal, and a dev server
@@ -45,7 +36,7 @@ npx vibe-kanban
 
 ## Installation
 
-Make sure you have authenticated with your favourite coding agent. A full list of supported coding agents can be found in the [docs](https://vibekanban.com/docs/supported-coding-agents). Then in your terminal run:
+Make sure you have authenticated with your preferred coding agent, then run:
 
 ```bash
 npx vibe-kanban
@@ -53,19 +44,19 @@ npx vibe-kanban
 
 ## Documentation
 
-Head to the [website](https://vibekanban.com/docs) for the latest documentation and user guides.
+Documentation is evolving with the community fork. For now, please use this repository as the source of truth and open issues/PRs here when something is unclear.
 
 ## Self-Hosting
 
-Want to host your own Vibe Kanban Cloud instance? See our [self-hosting guide](https://vibekanban.com/docs/self-hosting/deploy-docker).
+This project is intended to be local-first. More self-hosting and deployment notes will be added as the community version stabilizes.
 
 ## Support
 
-We use [GitHub Discussions](https://github.com/BloopAI/vibe-kanban/discussions) for feature requests. Please open a discussion to create a feature request. For bugs please open an issue on this repo.
+For bugs, ideas, and feature requests, please open an issue in this repository.
 
 ## Contributing
 
-We would prefer that ideas and changes are first raised with the core team via [GitHub Discussions](https://github.com/BloopAI/vibe-kanban/discussions) or [Discord](https://discord.gg/AC4nwVtJM3), where we can discuss implementation details and alignment with the existing roadmap. Please do not open PRs without first discussing your proposal with the team.
+Contributions are welcome. If you're planning a larger change, please open an issue first so we can align on scope and direction for the local-first community roadmap.
 
 ## Development
 
@@ -159,4 +150,4 @@ When running Vibe Kanban on a remote server (e.g., via systemctl, Docker, or clo
 
 When configured, the "Open in VSCode" buttons will generate URLs like `vscode://vscode-remote/ssh-remote+user@host/path` that open your local editor and connect to the remote server.
 
-See the [documentation](https://vibekanban.com/docs/settings/general) for detailed setup instructions.
+More detailed setup instructions for remote usage will be documented in this repository as the community fork matures.
