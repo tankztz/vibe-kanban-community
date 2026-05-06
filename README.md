@@ -46,18 +46,127 @@ npx vibe-kanban
 
 Documentation is evolving with the community fork. For now, please use this repository as the source of truth and open issues/PRs here when something is unclear.
 
-## Self-Hosting
+## Fresh clone → running
 
-This project is intended to be local-first.
+For a longer version, see [docs/self-host-local.md](docs/self-host-local.md).
 
-For the fastest local setup, see [docs/self-host-local.md](docs/self-host-local.md).
+### Prerequisites
 
-Short version:
+```bash
+# macOS
+brew install rust node bun postgresql@16
+brew services start postgresql@16
 
-1. Run a local PostgreSQL database
-2. Copy `crates/remote/.env.remote.example` to `crates/remote/.env.remote`
-3. Start the remote API with `cargo run --bin remote`
-4. Start the frontend with `VK_SHARED_API_BASE=http://localhost:4000 bun run dev`
+# Debian / Ubuntu
+sudo apt install -y rustup nodejs postgresql-16
+curl -fsSL https://bun.sh/install | bash
+sudo systemctl start postgresql
+```
+
+### 1. Clone and install
+
+```bash
+git clone https://github.com/tankztz/vibe-kanban-community.git
+cd vibe-kanban-community
+bun install
+```
+
+### 2. Set up the database
+
+```bash
+psql -d postgres <<'SQL'
+CREATE USER remote WITH PASSWORD 'remote' SUPERUSER;
+CREATE DATABASE remote OWNER remote;
+SQL
+```
+
+### 3. Create the relay env file
+
+This writes local secrets to a gitignored file:
+
+```bash
+cat > crates/remote/.env.remote <<EOF
+SERVER_DATABASE_URL=postgres://remote:remote@localhost:5432/remote
+SERVER_LISTEN_ADDR=127.0.0.1:4000
+SERVER_PUBLIC_BASE_URL=http://localhost:4000
+ELECTRIC_ROLE_PASSWORD=remote
+SELF_HOST_LOCAL_AUTH_EMAIL=admin@local
+RUST_LOG=info,remote=info
+VIBEKANBAN_REMOTE_JWT_SECRET=$(openssl rand -base64 48)
+SELF_HOST_LOCAL_AUTH_PASSWORD=$(openssl rand -base64 12)
+EOF
+
+chmod 600 crates/remote/.env.remote
+```
+
+If you want to keep the old Electric stub behavior, you can also add:
+
+```bash
+ELECTRIC_URL=http://localhost:1
+```
+
+### 4. Start the kanban backend (relay)
+
+In one terminal:
+
+```bash
+cd crates/remote
+set -a
+. ./.env.remote
+set +a
+cargo run --bin remote
+```
+
+First build can take a while. When it is up, verify:
+
+```bash
+curl http://localhost:4000/v1/health
+```
+
+Expected response:
+
+```json
+{"status":"ok","version":"0.2.0"}
+```
+
+### 5. Start the desktop app
+
+In a new terminal:
+
+```bash
+cd vibe-kanban-community
+export VK_SHARED_API_BASE=http://localhost:4000
+bun run dev
+```
+
+### 6. Open the app
+
+Visit <http://localhost:3001> and sign in with:
+
+- Email: `admin@local`
+- Password: `grep SELF_HOST_LOCAL_AUTH_PASSWORD crates/remote/.env.remote`
+
+### Daily use
+
+After first setup, startup is just two commands:
+
+```bash
+# Terminal 1 - relay
+cd vibe-kanban-community/crates/remote
+set -a
+. ./.env.remote
+set +a
+cargo run --bin remote
+```
+
+```bash
+# Terminal 2 - desktop app
+cd vibe-kanban-community
+export VK_SHARED_API_BASE=http://localhost:4000
+bun run dev
+```
+
+PostgreSQL only needs to be started once if your system service already handles it.
 
 ## Support
 

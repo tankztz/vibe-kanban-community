@@ -1,87 +1,132 @@
 # Local self-host quickstart
 
-This fork supports a simple local-first setup without Docker or Electric.
+This is the fastest known path from a fresh clone to a working local Vibe Kanban Community instance.
 
 ## Prerequisites
 
-- Rust
-- Node.js 20+
-- bun or pnpm
-- PostgreSQL running locally
-
-## 1. Prepare PostgreSQL
-
-Create a local database, for example:
-
 ```bash
-createdb vibe_kanban
+# macOS
+brew install rust node bun postgresql@16
+brew services start postgresql@16
+
+# Debian / Ubuntu
+sudo apt install -y rustup nodejs postgresql-16
+curl -fsSL https://bun.sh/install | bash
+sudo systemctl start postgresql
 ```
 
-If you plan to use Electric later, PostgreSQL must run with `wal_level=logical`.
-After changing it with `ALTER SYSTEM SET wal_level = 'logical';`, you must restart PostgreSQL for it to take effect.
-
-Examples:
+## 1. Clone and install
 
 ```bash
-# macOS (Homebrew)
-brew services restart postgresql
-
-# systemd Linux
-sudo systemctl restart postgresql
+git clone https://github.com/tankztz/vibe-kanban-community.git
+cd vibe-kanban-community
+bun install
 ```
 
-## 2. Create the remote env file
+## 2. Set up the database
 
 ```bash
-cp crates/remote/.env.remote.example crates/remote/.env.remote
+psql -d postgres <<'SQL'
+CREATE USER remote WITH PASSWORD 'remote' SUPERUSER;
+CREATE DATABASE remote OWNER remote;
+SQL
 ```
 
-At minimum, set:
+## 3. Create the relay env file
 
-- `SERVER_DATABASE_URL`
-- `SERVER_PUBLIC_BASE_URL`
-- `VIBEKANBAN_REMOTE_JWT_SECRET`
-- either local auth (`SELF_HOST_LOCAL_AUTH_EMAIL` / `SELF_HOST_LOCAL_AUTH_PASSWORD`) or OAuth credentials
+This generates local secrets and writes them into a gitignored file.
 
-## 3. Start the remote API
+```bash
+cat > crates/remote/.env.remote <<EOF
+SERVER_DATABASE_URL=postgres://remote:remote@localhost:5432/remote
+SERVER_LISTEN_ADDR=127.0.0.1:4000
+SERVER_PUBLIC_BASE_URL=http://localhost:4000
+ELECTRIC_ROLE_PASSWORD=remote
+SELF_HOST_LOCAL_AUTH_EMAIL=admin@local
+RUST_LOG=info,remote=info
+VIBEKANBAN_REMOTE_JWT_SECRET=$(openssl rand -base64 48)
+SELF_HOST_LOCAL_AUTH_PASSWORD=$(openssl rand -base64 12)
+EOF
+
+chmod 600 crates/remote/.env.remote
+```
+
+Optional: if you want the previous Electric stub behavior, add this line to `.env.remote`:
+
+```bash
+ELECTRIC_URL=http://localhost:1
+```
+
+## 4. Start the kanban backend (relay)
+
+In one terminal:
 
 ```bash
 cd crates/remote
 set -a
-source .env.remote
+. ./.env.remote
 set +a
 cargo run --bin remote
 ```
 
-Recommended local values:
+First build can take several minutes.
 
-```env
-SERVER_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/vibe_kanban
-SERVER_LISTEN_ADDR=0.0.0.0:4000
-SERVER_PUBLIC_BASE_URL=http://localhost:4000
-```
-
-## 4. Start the local web app
-
-From the repo root:
+Verify the backend is running:
 
 ```bash
+curl http://localhost:4000/v1/health
+```
+
+Expected response:
+
+```json
+{"status":"ok","version":"0.2.0"}
+```
+
+## 5. Start the desktop app
+
+In a separate terminal:
+
+```bash
+cd vibe-kanban-community
 export VK_SHARED_API_BASE=http://localhost:4000
 bun run dev
 ```
 
-Or with pnpm:
+## 6. Open the app
+
+Visit <http://localhost:3001> and sign in with:
+
+- Email: `admin@local`
+- Password: `grep SELF_HOST_LOCAL_AUTH_PASSWORD crates/remote/.env.remote`
+
+## Daily use
+
+After first setup, you usually only need these two commands:
 
 ```bash
-export VK_SHARED_API_BASE=http://localhost:4000
-pnpm run dev
+# Terminal 1 - relay
+cd vibe-kanban-community/crates/remote
+set -a
+. ./.env.remote
+set +a
+cargo run --bin remote
 ```
 
-## Current behavior notes
+```bash
+# Terminal 2 - desktop app
+cd vibe-kanban-community
+export VK_SHARED_API_BASE=http://localhost:4000
+bun run dev
+```
 
-- If `ELECTRIC_URL` is unset, Electric proxy routes stay disabled. This is expected for local-only mode.
-- Without Electric, realtime multi-tab sync is not available. Single-tab/local usage still works.
-- Claude Code executor now clears inherited `CLAUDECODE` so agent-launched Claude sessions can start even if Vibe Kanban itself was launched inside Claude Code.
+PostgreSQL normally auto-starts via brew/systemd once enabled.
+
+## Notes
+
+- `CLAUDECODE` is now cleared before launching Claude from agent tasks, so nested Claude Code sessions should no longer block startup.
+- If `ELECTRIC_URL` is unset, Electric proxy routes remain disabled. For single-user local-first usage, that is usually fine.
+- If you later enable logical replication for Electric, remember that `wal_level=logical` does not take effect until PostgreSQL is restarted.
 
 ## Helpful corp / constrained-network workarounds
 
