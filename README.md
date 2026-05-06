@@ -27,20 +27,9 @@ Use kanban issues to plan work, either privately or with your team. When you're 
 
 ![](packages/public/vibe-kanban-screenshot-workspace.png)
 
-One command. Describe the work, review the diff, ship it.
-
-```bash
-npx vibe-kanban
-```
-
-
 ## Installation
 
-Make sure you have authenticated with your preferred coding agent, then run:
-
-```bash
-npx vibe-kanban
-```
+For this community fork, use the **Fresh clone → running** guide below rather than `npx vibe-kanban`.
 
 ## Documentation
 
@@ -99,9 +88,9 @@ EOF
 chmod 600 crates/remote/.env.remote
 ```
 
-If you want to keep the old Electric stub behavior, you can also add:
+If you want to keep the old Electric stub behavior, add this line inside `crates/remote/.env.remote`:
 
-```bash
+```env
 ELECTRIC_URL=http://localhost:1
 ```
 
@@ -144,7 +133,7 @@ bun run dev
 Visit <http://localhost:3001> and sign in with:
 
 - Email: `admin@local`
-- Password: `grep SELF_HOST_LOCAL_AUTH_PASSWORD crates/remote/.env.remote`
+- Password: run `grep SELF_HOST_LOCAL_AUTH_PASSWORD crates/remote/.env.remote` to retrieve it
 
 ### Daily use
 
@@ -259,18 +248,6 @@ VK_ALLOWED_ORIGINS=https://vk.example.com
 # Multiple origins (comma-separated)
 VK_ALLOWED_ORIGINS=https://vk.example.com,https://vk-staging.example.com
 ```
-
-### Local PostgreSQL
-
-This fork is being shaped around a local-first workflow. For local development, point the app at a PostgreSQL instance running on your machine or LAN.
-
-A typical local connection string looks like:
-
-```bash
-DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/vibe_kanban
-```
-
-You can place this in your local environment file before running the app.
 
 ### Remote Deployment
 
